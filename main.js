@@ -21,7 +21,7 @@ function fetchStatus() {
       res.on('data', (chunk) => body += chunk);
       res.on('end', () => {
         try { resolve(JSON.parse(body)); }
-        catch (e) { reject(new Error('Failed to parse response')); }
+        catch { reject(new Error('Failed to parse response')); }
       });
     });
     req.on('error', reject);
