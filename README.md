@@ -67,6 +67,10 @@ renderer/
   style.css        Glassmorphic styling, status colors, animations
 build/
   icon.icns        macOS app icon
+eslint.config.js   ESLint 9 flat config (Node + browser globals)
+.github/workflows/
+  ci.yml           Lint + build on push/PR
+  release.yml      Build DMG + publish GitHub Release on version tags
 ```
 
 ## Config
@@ -80,6 +84,35 @@ const WIDGET_WIDTH     = 320;  // px
 const MARGIN           = 20;   // px from screen edge
 const POLL_MS          = 60_000; // poll interval (ms)
 ```
+
+## CI/CD
+
+### Continuous Integration
+
+Every push to `main` and every pull request runs the [CI workflow](.github/workflows/ci.yml):
+
+1. **Lint** — ESLint on `ubuntu-latest`
+2. **Build** — `electron-builder --mac` on `macos-latest`, with the `.dmg` uploaded as an artifact (retained 14 days)
+
+### Releasing
+
+The [Release workflow](.github/workflows/release.yml) triggers on version tags:
+
+```bash
+# bump version in package.json, commit, then:
+git tag v1.1.0
+git push origin main --tags
+```
+
+This builds the DMG, creates a GitHub Release with auto-generated notes, and attaches the `.dmg` as a downloadable asset.
+
+### Linting
+
+```bash
+npm run lint
+```
+
+Uses ESLint 9 with separate configurations for the Node/Electron main process and the browser renderer.
 
 ## Auto-start on login (optional)
 
