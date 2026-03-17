@@ -103,6 +103,13 @@ ipcMain.on('toggle-expand', (_, expanded) => {
 
 ipcMain.on('refresh', pollAndNotify);
 
-ipcMain.on('open-external', (_, url) => shell.openExternal(url));
+ipcMain.on('open-external', (_, url) => {
+  try {
+    const parsed = new URL(url);
+    if (parsed.origin === 'https://status.claude.com') {
+      shell.openExternal(url);
+    }
+  } catch { /* ignore invalid URLs */ }
+});
 
 ipcMain.on('quit', () => app.quit());
