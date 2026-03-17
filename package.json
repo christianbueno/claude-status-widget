@@ -1,0 +1,22 @@
+{
+  "name": "claude-status-widget",
+  "version": "1.0.0",
+  "description": "Floating macOS widget for Claude system status",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --mac"
+  },
+  "devDependencies": {
+    "electron": "^41.0.2",
+    "electron-builder": "^26.8.1"
+  },
+  "build": {
+    "appId": "com.claude.status-widget",
+    "productName": "Claude Status",
+    "mac": {
+      "category": "public.app-category.utilities",
+      "target": "dmg"
+    }
+  }
+}
