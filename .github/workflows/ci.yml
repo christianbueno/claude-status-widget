@@ -30,7 +30,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm run build
+      - run: npx electron-builder --mac --publish never
       - uses: actions/upload-artifact@v5
         with:
           name: dmg-artifact
