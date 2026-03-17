@@ -118,3 +118,11 @@ Uses ESLint 9 with separate configurations for the Node/Electron main process an
 
 In **System Settings → General → Login Items**, add the built `.app`
 or use the `app.setLoginItemSettings({ openAtLogin: true })` Electron API.
+
+## Contributing
+
+This is a personal project — pull requests are not accepted. You're welcome to fork the repo and build on it however you like. Bug reports and feature suggestions via issues are appreciated. See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+
+## License
+
+[MIT](LICENSE)
