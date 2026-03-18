@@ -33,6 +33,78 @@ button { font-family: inherit; }
   --text-muted:     rgba(255, 255, 255, 0.25);
   --hover-bg:       rgba(255, 255, 255, 0.05);
   --shadow: 0 20px 60px rgba(0,0,0,0.55), 0 4px 20px rgba(0,0,0,0.35);
+
+  /* Badge colors (theme-adaptive) */
+  --badge-operational-bg:  rgba(34,197,94,0.12);
+  --badge-operational-text: #4ade80;
+  --badge-degraded-bg:     rgba(245,158,11,0.12);
+  --badge-degraded-text:   #fbbf24;
+  --badge-partial-bg:      rgba(249,115,22,0.12);
+  --badge-partial-text:    #fb923c;
+  --badge-critical-bg:     rgba(239,68,68,0.12);
+  --badge-critical-text:   #f87171;
+  --badge-maintenance-bg:  rgba(99,102,241,0.12);
+  --badge-maintenance-text:#818cf8;
+  --badge-unknown-bg:      rgba(107,114,128,0.12);
+  --badge-unknown-text:    #9ca3af;
+
+  /* Incident card colors (theme-adaptive) */
+  --incident-bg:           rgba(239, 68, 68, 0.05);
+  --incident-border:       rgba(239, 68, 68, 0.18);
+  --incident-title:        #fca5a5;
+  --incident-status-bg:    rgba(239, 68, 68, 0.15);
+  --incident-status-text:  #f87171;
+  --maint-bg:              rgba(99, 102, 241, 0.05);
+  --maint-border:          rgba(99, 102, 241, 0.2);
+  --maint-title:           #a5b4fc;
+  --maint-status-bg:       rgba(99, 102, 241, 0.15);
+  --maint-status-text:     #818cf8;
+
+  /* Quit button hover */
+  --quit-hover-text:       #f87171;
+  --quit-hover-border:     rgba(239, 68, 68, 0.35);
+  --quit-hover-bg:         rgba(239, 68, 68, 0.08);
+  --quit-border:           rgba(255,255,255,0.08);
+}
+
+/* ── Light Theme ─────────────────────────────────────────────────────────── */
+html.light {
+  --bg-glass: rgba(255, 255, 255, 0.88);
+  --border:   rgba(0, 0, 0, 0.08);
+  --text-primary:   rgba(0, 0, 0, 0.85);
+  --text-secondary: rgba(0, 0, 0, 0.50);
+  --text-muted:     rgba(0, 0, 0, 0.30);
+  --hover-bg:       rgba(0, 0, 0, 0.04);
+  --shadow: 0 20px 60px rgba(0,0,0,0.12), 0 4px 20px rgba(0,0,0,0.08);
+
+  --badge-operational-bg:  rgba(34,197,94,0.10);
+  --badge-operational-text: #16a34a;
+  --badge-degraded-bg:     rgba(245,158,11,0.10);
+  --badge-degraded-text:   #d97706;
+  --badge-partial-bg:      rgba(249,115,22,0.10);
+  --badge-partial-text:    #ea580c;
+  --badge-critical-bg:     rgba(239,68,68,0.10);
+  --badge-critical-text:   #dc2626;
+  --badge-maintenance-bg:  rgba(99,102,241,0.10);
+  --badge-maintenance-text:#4f46e5;
+  --badge-unknown-bg:      rgba(107,114,128,0.10);
+  --badge-unknown-text:    #4b5563;
+
+  --incident-bg:           rgba(239, 68, 68, 0.06);
+  --incident-border:       rgba(239, 68, 68, 0.20);
+  --incident-title:        #dc2626;
+  --incident-status-bg:    rgba(239, 68, 68, 0.12);
+  --incident-status-text:  #dc2626;
+  --maint-bg:              rgba(99, 102, 241, 0.06);
+  --maint-border:          rgba(99, 102, 241, 0.20);
+  --maint-title:           #4f46e5;
+  --maint-status-bg:       rgba(99, 102, 241, 0.12);
+  --maint-status-text:     #4f46e5;
+
+  --quit-hover-text:       #dc2626;
+  --quit-hover-border:     rgba(239, 68, 68, 0.30);
+  --quit-hover-bg:         rgba(239, 68, 68, 0.06);
+  --quit-border:           rgba(0,0,0,0.10);
 }
 
 /* ── Status Dot ───────────────────────────────────────────────────────────── */
@@ -256,17 +328,17 @@ button { font-family: inherit; }
   flex-shrink: 0;
 }
 
-.badge-operational  { background: rgba(34,197,94,0.12);  color: #4ade80; }
-.badge-degraded     { background: rgba(245,158,11,0.12); color: #fbbf24; }
-.badge-partial      { background: rgba(249,115,22,0.12); color: #fb923c; }
-.badge-critical     { background: rgba(239,68,68,0.12);  color: #f87171; }
-.badge-maintenance  { background: rgba(99,102,241,0.12); color: #818cf8; }
-.badge-unknown      { background: rgba(107,114,128,0.12);color: #9ca3af; }
+.badge-operational  { background: var(--badge-operational-bg);  color: var(--badge-operational-text); }
+.badge-degraded     { background: var(--badge-degraded-bg);     color: var(--badge-degraded-text); }
+.badge-partial      { background: var(--badge-partial-bg);      color: var(--badge-partial-text); }
+.badge-critical     { background: var(--badge-critical-bg);     color: var(--badge-critical-text); }
+.badge-maintenance  { background: var(--badge-maintenance-bg);  color: var(--badge-maintenance-text); }
+.badge-unknown      { background: var(--badge-unknown-bg);      color: var(--badge-unknown-text); }
 
 /* ── Incident Card ────────────────────────────────────────────────────────── */
 .incident-card {
-  background: rgba(239, 68, 68, 0.05);
-  border: 1px solid rgba(239, 68, 68, 0.18);
+  background: var(--incident-bg);
+  border: 1px solid var(--incident-border);
   border-radius: 10px;
   padding: 10px 12px;
   margin-bottom: 8px;
@@ -275,7 +347,7 @@ button { font-family: inherit; }
 .incident-title {
   font-size: 12.5px;
   font-weight: 600;
-  color: #fca5a5;
+  color: var(--incident-title);
   margin-bottom: 5px;
   line-height: 1.3;
 }
@@ -302,19 +374,19 @@ button { font-family: inherit; }
   letter-spacing: 0.05em;
   padding: 1px 6px;
   border-radius: 4px;
-  background: rgba(239, 68, 68, 0.15);
-  color: #f87171;
+  background: var(--incident-status-bg);
+  color: var(--incident-status-text);
 }
 
 /* Maintenance card variant */
 .incident-card.maintenance {
-  background: rgba(99, 102, 241, 0.05);
-  border-color: rgba(99, 102, 241, 0.2);
+  background: var(--maint-bg);
+  border-color: var(--maint-border);
 }
-.incident-card.maintenance .incident-title { color: #a5b4fc; }
+.incident-card.maintenance .incident-title { color: var(--maint-title); }
 .incident-card.maintenance .incident-status {
-  background: rgba(99, 102, 241, 0.15);
-  color: #818cf8;
+  background: var(--maint-status-bg);
+  color: var(--maint-status-text);
 }
 
 /* Error state */
@@ -326,6 +398,77 @@ button { font-family: inherit; }
   line-height: 1.6;
 }
 .error-state .error-icon { font-size: 24px; margin-bottom: 8px; }
+
+/* ── Settings Section ────────────────────────────────────────────────────── */
+.settings-section {
+  padding: 10px 14px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+  -webkit-app-region: no-drag;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+}
+
+.settings-label {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+/* Segmented control */
+.segmented-control {
+  display: flex;
+  background: var(--hover-bg);
+  border-radius: 8px;
+  padding: 2px;
+  gap: 1px;
+}
+
+.seg-btn {
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+}
+.seg-btn:hover { color: var(--text-secondary); }
+.seg-btn.active {
+  color: var(--text-primary);
+  background: var(--bg-glass);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+
+/* Settings action button */
+.settings-action-btn {
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.settings-action-btn:hover {
+  color: var(--text-primary);
+  background: var(--hover-bg);
+}
+
+/* Gear button active state */
+.icon-btn.settings-active {
+  color: var(--c-brand);
+  background: var(--hover-bg);
+}
 
 /* ── Panel Footer ─────────────────────────────────────────────────────────── */
 .panel-footer {
@@ -347,14 +490,14 @@ button { font-family: inherit; }
   font-size: 10.5px;
   color: var(--text-muted);
   background: transparent;
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid var(--quit-border);
   border-radius: 6px;
   padding: 3px 10px;
   cursor: pointer;
   transition: color 0.15s, border-color 0.15s, background 0.15s;
 }
 .quit-btn:hover {
-  color: #f87171;
-  border-color: rgba(239, 68, 68, 0.35);
-  background: rgba(239, 68, 68, 0.08);
+  color: var(--quit-hover-text);
+  border-color: var(--quit-hover-border);
+  background: var(--quit-hover-bg);
 }
