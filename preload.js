@@ -1,8 +1,14 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('widget', {
-  onStatusUpdate: (cb) => ipcRenderer.on('status-update', (_, payload) => cb(payload)),
-  onThemeUpdate: (cb) => ipcRenderer.on('theme-update', (_, payload) => cb(payload)),
+  onStatusUpdate: (cb) => {
+    ipcRenderer.removeAllListeners('status-update');
+    ipcRenderer.on('status-update', (_, payload) => cb(payload));
+  },
+  onThemeUpdate: (cb) => {
+    ipcRenderer.removeAllListeners('theme-update');
+    ipcRenderer.on('theme-update', (_, payload) => cb(payload));
+  },
   toggleExpand: (expanded) => ipcRenderer.send('toggle-expand', expanded),
   refresh: () => ipcRenderer.send('refresh'),
   openExternal: (url) => ipcRenderer.send('open-external', url),

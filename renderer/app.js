@@ -4,19 +4,19 @@
 const STATUS_PAGE_URL = 'https://status.claude.com';
 
 const INDICATOR_MAP = {
-  none:        { cls: 'operational', label: 'All Systems Operational' },
-  minor:       { cls: 'degraded',    label: 'Minor Service Issues' },
-  major:       { cls: 'partial',     label: 'Partial Service Outage' },
-  critical:    { cls: 'critical',    label: 'Major Service Outage' },
-  maintenance: { cls: 'maintenance', label: 'Under Maintenance' },
+  none:        { cls: 'operational' },
+  minor:       { cls: 'degraded' },
+  major:       { cls: 'partial' },
+  critical:    { cls: 'critical' },
+  maintenance: { cls: 'maintenance' },
 };
 
 const COMP_STATUS_MAP = {
-  operational:         { cls: 'operational',  badge: 'Operational',   bCls: 'badge-operational' },
-  degraded_performance:{ cls: 'degraded',     badge: 'Degraded',      bCls: 'badge-degraded' },
-  partial_outage:      { cls: 'partial',      badge: 'Partial Outage',bCls: 'badge-partial' },
-  major_outage:        { cls: 'critical',     badge: 'Major Outage',  bCls: 'badge-critical' },
-  under_maintenance:   { cls: 'maintenance',  badge: 'Maintenance',   bCls: 'badge-maintenance' },
+  operational:         { badge: 'Operational',    bCls: 'badge-operational' },
+  degraded_performance:{ badge: 'Degraded',       bCls: 'badge-degraded' },
+  partial_outage:      { badge: 'Partial Outage', bCls: 'badge-partial' },
+  major_outage:        { badge: 'Major Outage',   bCls: 'badge-critical' },
+  under_maintenance:   { badge: 'Maintenance',    bCls: 'badge-maintenance' },
 };
 
 // ── DOM Refs ───────────────────────────────────────────────────────────────
@@ -57,6 +57,7 @@ function esc(str) {
 function relTime(iso) {
   if (!iso) return '';
   const diff = Date.now() - new Date(iso).getTime();
+  if (diff < 0) return 'upcoming';
   const m = Math.floor(diff / 60_000);
   if (m < 1)  return 'just now';
   if (m < 60) return `${m}m ago`;
@@ -66,7 +67,7 @@ function relTime(iso) {
 }
 
 function setDot(el, cls, pulse = false) {
-  el.className = `dot${el.classList.contains('dot-lg') ? ' dot-lg' : ''} ${cls}`;
+  el.className = `dot ${cls}`;
   if (pulse) el.classList.add('pulse');
 }
 
@@ -138,7 +139,7 @@ function render({ data, error }) {
   });
 
   componentsEl.innerHTML = components.map(c => {
-    const s = COMP_STATUS_MAP[c.status] ?? { cls: 'unknown', badge: c.status, bCls: 'badge-unknown' };
+    const s = COMP_STATUS_MAP[c.status] ?? { badge: c.status, bCls: 'badge-unknown' };
     return `
       <div class="comp-row">
         <span class="comp-name">${esc(c.name)}</span>

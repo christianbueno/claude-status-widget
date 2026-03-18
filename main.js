@@ -197,9 +197,12 @@ function createTrayIcon(statusHex) {
   return img;
 }
 
-function updateTrayIcon() {
+let lastTrayColor = null;
+function updateTrayIcon(force = false) {
   if (!tray || tray.isDestroyed()) return;
   const color = INDICATOR_COLOR_MAP[lastIndicator] || TRAY_COLOR_UNKNOWN;
+  if (!force && color === lastTrayColor) return;
+  lastTrayColor = color;
   tray.setImage(createTrayIcon(color));
 }
 
@@ -405,6 +408,7 @@ app.whenReady().then(() => {
 
 app.on('before-quit', () => {
   isQuitting = true;
+  clearInterval(pollTimer);
   if (tray && !tray.isDestroyed()) tray.destroy();
 });
 
@@ -437,7 +441,7 @@ nativeTheme.on('updated', () => {
     sendThemeToRenderer();
   }
   // Re-render tray icon so asterisk color adapts to menu bar appearance
-  updateTrayIcon();
+  updateTrayIcon(true);
 });
 
 // ── IPC ──────────────────────────────────────────────────────────────────────
