@@ -9,4 +9,5 @@ contextBridge.exposeInMainWorld('widget', {
   setTheme: (mode) => ipcRenderer.send('set-theme', mode),
   resetPosition: () => ipcRenderer.send('reset-position'),
   quit: () => ipcRenderer.send('quit'),
+  minimizeToTray: () => ipcRenderer.send('minimize-to-tray'),
 });

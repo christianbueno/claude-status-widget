@@ -35,6 +35,8 @@ const btnRefresh   = document.getElementById('btn-refresh');
 const btnClose     = document.getElementById('btn-close');
 const btnExt       = document.getElementById('btn-ext');
 const btnQuit      = document.getElementById('btn-quit');
+const btnMinimize  = document.getElementById('btn-minimize');
+const btnMinPill   = document.getElementById('btn-minimize-pill');
 const pillIcon     = document.getElementById('pill-icon');
 const btnSettings  = document.getElementById('btn-settings');
 const settingsEl   = document.getElementById('settings');
@@ -88,6 +90,8 @@ btnClose.addEventListener('click',  () => setExpanded(false));
 pillIcon.addEventListener('click',  () => setExpanded(true));
 btnExt.addEventListener('click',    () => window.widget?.openExternal(STATUS_PAGE_URL));
 btnQuit.addEventListener('click',   () => window.widget?.quit());
+btnMinimize.addEventListener('click', () => window.widget?.minimizeToTray());
+btnMinPill.addEventListener('click',  () => window.widget?.minimizeToTray());
 
 btnRefresh.addEventListener('click', () => {
   btnRefresh.classList.add('spinning');
