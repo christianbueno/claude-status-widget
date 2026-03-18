@@ -20,6 +20,7 @@ module.exports = [
         setTimeout: 'readonly',
         clearTimeout: 'readonly',
         URL: 'readonly',
+        Buffer: 'readonly',
       },
     },
   },

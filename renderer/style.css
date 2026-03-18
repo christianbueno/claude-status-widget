@@ -115,8 +115,6 @@ html.light {
   background: var(--c-unknown);
   position: relative;
 }
-.dot-lg { width: 11px; height: 11px; }
-
 .dot.operational  { background: var(--c-operational); }
 .dot.degraded     { background: var(--c-degraded); }
 .dot.partial      { background: var(--c-partial); }
