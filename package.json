@@ -1,6 +1,6 @@
 {
   "name": "claude-status-widget",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Floating macOS widget for Claude system status",
   "main": "main.js",
   "license": "MIT",
