@@ -7,27 +7,30 @@ let mainWindow;
 let pollTimer;
 let lastIndicator = null;
 let currentThemeMode = 'system';
+let preExpandY = null;
 
 // ── Preferences ─────────────────────────────────────────────────────────────
 const PREFS_DEFAULTS = { position: null, theme: 'system' };
+let cachedPrefs = null;
 
 function getPrefsPath() {
   return path.join(app.getPath('userData'), 'preferences.json');
 }
 
 function loadPrefs() {
+  if (cachedPrefs) return { ...cachedPrefs };
   try {
     const data = JSON.parse(fs.readFileSync(getPrefsPath(), 'utf-8'));
-    return { ...PREFS_DEFAULTS, ...data };
+    cachedPrefs = { ...PREFS_DEFAULTS, ...data };
   } catch {
-    return { ...PREFS_DEFAULTS };
+    cachedPrefs = { ...PREFS_DEFAULTS };
   }
+  return { ...cachedPrefs };
 }
 
 function savePrefs(prefs) {
-  try {
-    fs.writeFileSync(getPrefsPath(), JSON.stringify(prefs, null, 2));
-  } catch { /* ignore write errors */ }
+  cachedPrefs = { ...prefs };
+  fs.promises.writeFile(getPrefsPath(), JSON.stringify(prefs, null, 2)).catch(() => {});
 }
 
 const COLLAPSED_HEIGHT = 52;
@@ -45,14 +48,14 @@ function getDefaultPosition() {
   };
 }
 
-function validatePosition(pos) {
+function validatePosition(pos, height = COLLAPSED_HEIGHT) {
   if (!pos || typeof pos.x !== 'number' || typeof pos.y !== 'number') return null;
-  const bounds = { x: pos.x, y: pos.y, width: WIDGET_WIDTH, height: COLLAPSED_HEIGHT };
+  const bounds = { x: pos.x, y: pos.y, width: WIDGET_WIDTH, height };
   const display = screen.getDisplayMatching(bounds);
   const wa = display.workArea;
   if (pos.x >= wa.x && pos.y >= wa.y &&
       pos.x + WIDGET_WIDTH <= wa.x + wa.width &&
-      pos.y + COLLAPSED_HEIGHT <= wa.y + wa.height) {
+      pos.y + height <= wa.y + wa.height) {
     return pos;
   }
   return null;
@@ -102,7 +105,8 @@ async function pollAndNotify() {
 function createWindow() {
   const prefs = loadPrefs();
   const pos = validatePosition(prefs.position) || getDefaultPosition();
-  currentThemeMode = prefs.theme || 'system';
+  const VALID_THEMES = ['dark', 'light', 'system'];
+  currentThemeMode = VALID_THEMES.includes(prefs.theme) ? prefs.theme : 'system';
 
   mainWindow = new BrowserWindow({
     width: WIDGET_WIDTH,
@@ -165,7 +169,7 @@ app.whenReady().then(() => {
   const revalidatePosition = () => {
     if (!mainWindow || mainWindow.isDestroyed()) return;
     const b = mainWindow.getBounds();
-    if (!validatePosition({ x: b.x, y: b.y })) {
+    if (!validatePosition({ x: b.x, y: b.y }, b.height)) {
       const def = getDefaultPosition();
       mainWindow.setBounds({ x: def.x, y: def.y, width: b.width, height: b.height }, true);
       const prefs = loadPrefs();
@@ -210,17 +214,18 @@ ipcMain.on('toggle-expand', (_, expanded) => {
   const newH = expanded ? EXPANDED_HEIGHT : COLLAPSED_HEIGHT;
   let newY = b.y;
   if (expanded) {
-    // Expand downward from pill; shift up if panel would exceed work area bottom
+    // Cache collapsed Y so we can restore it on collapse
+    preExpandY = b.y;
+    // Clamp within work area vertically
     const display = screen.getDisplayMatching(b);
-    const waBottom = display.workArea.y + display.workArea.height;
-    if (b.y + newH > waBottom) {
-      newY = waBottom - newH;
-    }
+    const wa = display.workArea;
+    newY = Math.max(wa.y, Math.min(b.y, wa.y + wa.height - newH));
   } else {
-    // Collapsing: restore to saved position or keep current x with collapsed height
+    // Collapsing: restore to saved position, pre-expand position, or default
     const prefs = loadPrefs();
     const saved = validatePosition(prefs.position);
-    newY = saved ? saved.y : b.y;
+    newY = saved ? saved.y : (preExpandY ?? getDefaultPosition().y);
+    preExpandY = null;
   }
   mainWindow.setBounds(
     { x: b.x, width: WIDGET_WIDTH, height: newH, y: newY },
@@ -254,8 +259,18 @@ ipcMain.on('reset-position', () => {
   prefs.position = null;
   savePrefs(prefs);
   const def = getDefaultPosition();
+  const currentHeight = mainWindow.getBounds().height;
+  let y = def.y;
+  // If expanded, shift up so the panel doesn't overflow the work area
+  if (currentHeight > COLLAPSED_HEIGHT) {
+    const display = screen.getDisplayMatching(mainWindow.getBounds());
+    const waBottom = display.workArea.y + display.workArea.height;
+    if (def.y + currentHeight > waBottom) {
+      y = waBottom - currentHeight;
+    }
+  }
   mainWindow.setBounds(
-    { x: def.x, y: def.y, width: WIDGET_WIDTH, height: COLLAPSED_HEIGHT },
+    { x: def.x, y, width: WIDGET_WIDTH, height: currentHeight },
     true
   );
 });
