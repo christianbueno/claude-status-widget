@@ -36,9 +36,14 @@ const btnClose     = document.getElementById('btn-close');
 const btnExt       = document.getElementById('btn-ext');
 const btnQuit      = document.getElementById('btn-quit');
 const pillIcon     = document.getElementById('pill-icon');
+const btnSettings  = document.getElementById('btn-settings');
+const settingsEl   = document.getElementById('settings');
+const themeToggle  = document.getElementById('theme-toggle');
+const btnResetPos  = document.getElementById('btn-reset-pos');
 
 // ── State ──────────────────────────────────────────────────────────────────
 let expanded = false;
+let settingsOpen = false;
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 function esc(str) {
@@ -169,5 +174,37 @@ function render({ data, error }) {
   updatedAt.textContent = `Updated ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
 }
 
+// ── Settings ──────────────────────────────────────────────────────────────
+btnSettings.addEventListener('click', () => {
+  settingsOpen = !settingsOpen;
+  settingsEl.classList.toggle('hidden', !settingsOpen);
+  btnSettings.classList.toggle('settings-active', settingsOpen);
+});
+
+themeToggle.addEventListener('click', (e) => {
+  const btn = e.target.closest('.seg-btn');
+  if (!btn) return;
+  const mode = btn.dataset.theme;
+  window.widget?.setTheme(mode);
+});
+
+btnResetPos.addEventListener('click', () => {
+  window.widget?.resetPosition();
+});
+
+// ── Theme ─────────────────────────────────────────────────────────────────
+function applyTheme({ mode, resolved }) {
+  if (resolved === 'light') {
+    document.documentElement.classList.add('light');
+  } else {
+    document.documentElement.classList.remove('light');
+  }
+  // Update segmented control active state
+  themeToggle.querySelectorAll('.seg-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.theme === mode);
+  });
+}
+
 // ── Wire up main-process updates ───────────────────────────────────────────
 window.widget?.onStatusUpdate(render);
+window.widget?.onThemeUpdate(applyTheme);
