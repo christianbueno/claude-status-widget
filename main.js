@@ -270,6 +270,7 @@ async function pollAndNotify() {
       mainWindow.webContents.send('status-update', { data, error: null });
     }
   } catch (err) {
+    lastIndicator = null;
     updateTrayIcon();
 
     if (mainWindow && !mainWindow.isDestroyed()) {
