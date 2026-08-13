@@ -55,6 +55,58 @@ npm run build
 
 This produces a distributable `.dmg` in the `dist/` folder via `electron-builder`.
 
+## Running on Linux
+
+macOS is still the primary target (CI/release only build `.dmg`s via the `mac` electron-builder target), but the app runs fine on Linux too. There are two ways to run it: dev mode (`npm start`) or a packaged `.deb`. The `.deb` is the better option if you want it running persistently / on login, since its installer handles the sandbox-permission quirk below automatically.
+
+### Dev mode caveats
+
+- **`chrome-sandbox` permissions.** Electron's SUID sandbox helper ships without the right ownership/permission bits, so a fresh `npm install` + `npm start` fails immediately with a `FATAL` error from `setuid_sandbox_host.cc`. Fix once per machine:
+  ```bash
+  sudo chown root:root node_modules/electron/dist/chrome-sandbox
+  sudo chmod 4755 node_modules/electron/dist/chrome-sandbox
+  ```
+  (Alternatively, run `electron . --no-sandbox` to skip Chromium's sandbox — fine for local use, not something to ship in a distributed build. Not needed at all for the packaged `.deb` below — its installer sets this up correctly for you.)
+
+- **Widget centers instead of docking to a corner on native Wayland.** Wayland's protocol deliberately gives clients no way to read or set their own absolute screen position (unlike X11), so the bottom-right placement in [main.js](main.js) is silently ignored under a native-Wayland session (e.g. stock GNOME) — the compositor just centers it instead. Drag-to-reposition and position persistence likely inherit the same limitation. The workaround is forcing the XWayland (X11) compatibility path, which does support absolute positioning:
+  ```bash
+  ELECTRON_OZONE_PLATFORM_HINT=x11 npm start
+  ```
+  This is a known Electron/Wayland limitation, not something fixable with an app-level flag on native Wayland itself.
+
+- **System tray** works fine on GNOME as long as the "AppIndicator and KStatusNotifierItem Support" extension is enabled (Ubuntu ships it enabled by default; other distros/desktops may need it installed separately).
+
+### Build and install a `.deb`
+
+```bash
+npm run build:linux
+```
+
+Produces `dist/claude-status-widget_<version>_amd64.deb`. Install it with `apt` (not bare `dpkg -i`, so its dependencies get pulled in automatically):
+
+```bash
+sudo apt install ./dist/claude-status-widget_1.1.0_amd64.deb
+```
+
+This installs the app to `/opt/Claude Status/`, adds a `claude-status-widget` command to `/usr/bin`, and registers an application-menu launcher at `/usr/share/applications/claude-status-widget.desktop`. The installer's `postinst` script also sets up `chrome-sandbox` correctly for your kernel (SUID or plain, depending on whether unprivileged user namespaces are available) and installs an AppArmor profile on Ubuntu 24+ — no manual sandbox fix needed.
+
+### Auto-start on login
+
+Copy the installed launcher into your XDG autostart directory:
+
+```bash
+mkdir -p ~/.config/autostart
+cp /usr/share/applications/claude-status-widget.desktop ~/.config/autostart/
+```
+
+It'll now launch automatically at every login. To undo, delete the copy in `~/.config/autostart/` (this doesn't affect the app-menu launcher or the install itself).
+
+To uninstall the app entirely:
+
+```bash
+sudo apt remove claude-status-widget
+```
+
 ## Usage
 
 | Action | Result |
@@ -65,7 +117,7 @@ This produces a distributable `.dmg` in the `dist/` folder via `electron-builder
 | Click tray icon | Toggle widget visibility |
 | Right-click tray icon | Show/Hide Widget or Quit |
 | Click `↗` in panel header | Open status.claude.com in browser |
-| Click `⟳` | Force refresh |
+| Click `⟳` (pill or panel header) | Force refresh |
 | Click `⚙` in panel header | Open settings (theme & position) |
 | Drag pill / panel header | Reposition widget |
 | Click `Quit` | Exit the app |
@@ -81,6 +133,7 @@ renderer/
   style.css        Glassmorphic styling, status colors, animations, light/dark themes
 build/
   icon.icns        macOS app icon
+  icon.png         Linux app icon (build:linux target)
 eslint.config.js   ESLint 9 flat config (Node + browser globals)
 .github/workflows/
   ci.yml           Lint + build on push/PR
@@ -128,10 +181,12 @@ npm run lint
 
 Uses ESLint 9 with separate configurations for the Node/Electron main process and the browser renderer.
 
-## Auto-start on login (optional)
+## Auto-start on login (optional, macOS)
 
 In **System Settings → General → Login Items**, add the built `.app`
 or use the `app.setLoginItemSettings({ openAtLogin: true })` Electron API.
+
+(On Linux, see [Auto-start on login](#auto-start-on-login) under "Running on Linux" above.)
 
 ## Contributing
 
