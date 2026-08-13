@@ -32,6 +32,7 @@ const incidentsSec = document.getElementById('incidents-section');
 const updatedAt    = document.getElementById('updated-at');
 const btnToggle    = document.getElementById('btn-toggle');
 const btnRefresh   = document.getElementById('btn-refresh');
+const btnRefreshPanel = document.getElementById('btn-refresh-panel');
 const btnClose     = document.getElementById('btn-close');
 const btnExt       = document.getElementById('btn-ext');
 const btnQuit      = document.getElementById('btn-quit');
@@ -100,9 +101,16 @@ btnRefresh.addEventListener('click', () => {
   // spinner stops when status-update fires
 });
 
+btnRefreshPanel.addEventListener('click', () => {
+  btnRefreshPanel.classList.add('spinning');
+  window.widget?.refresh();
+  // spinner stops when status-update fires
+});
+
 // ── Render ─────────────────────────────────────────────────────────────────
 function render({ data, error }) {
   btnRefresh.classList.remove('spinning');
+  btnRefreshPanel.classList.remove('spinning');
 
   if (error || !data) {
     const msg = error || 'Unknown error';
